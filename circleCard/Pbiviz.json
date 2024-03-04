@@ -4,12 +4,12 @@
       "displayName": "circlecard",
       "guid": "circlecard4AD8D1E1DA0943AEB18E1E59B92001A9",
       "visualClassName": "Visual",
-      "version": "1.0.3",
-      "description": "",
-      "supportUrl": "http://community.powerbi.com/",
-      "gitHubUrl": "https://github.com/wenkik/PowerBI/tree/master/circleCard"
+      "version": "1.0.0.0",
+      "description": "PowerBI",
+      "supportUrl": "blank",
+      "gitHubUrl": "blank"
     },
-    "apiVersion": "1.7.0",
+    "apiVersion": "4.7.0",
     "author": {
       "name": "Microsoft",
       "email": "v-wenhaixia@microsoft.com"

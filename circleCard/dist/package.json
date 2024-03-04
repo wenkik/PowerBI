@@ -1,0 +1,17 @@
+{
+		"version": "1.0.0.0",
+		"author": {"name":"Microsoft","email":"v-wenhaixia@microsoft.com"},
+		"resources": [
+			{
+				"resourceId": "rId0",
+				"sourceType": 5,
+				"file": "resources/circlecard4AD8D1E1DA0943AEB18E1E59B92001A9.pbiviz.json"
+			}
+		],
+		"visual": {"name":"PowerBI-visuals","displayName":"circlecard","guid":"circlecard4AD8D1E1DA0943AEB18E1E59B92001A9","visualClassName":"Visual","version":"1.0.0.0","description":"PowerBI","supportUrl":"blank","gitHubUrl":"blank"},
+		"metadata": {
+			"pbivizjson": {
+				"resourceId": "rId0"
+			}
+		}
+	}
