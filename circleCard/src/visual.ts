@@ -23,23 +23,20 @@
 *  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 *  THE SOFTWARE.
 */
-
 "use strict";
-import "core-js/stable";
-import "../style/visual.less";
+
+import "./../style/visual.less";
 import powerbi from "powerbi-visuals-api";
-import IVisual = powerbi.extensibility.IVisual;
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
-import IVisualHost = powerbi.extensibility.visual.IVisualHost;
+import IVisual = powerbi.extensibility.visual.IVisual;
 import DataView = powerbi.DataView;
-import EnumerateVisualObjectInstancesOptions = powerbi.EnumerateVisualObjectInstancesOptions;
-import VisualObjectInstanceEnumeration = powerbi.VisualObjectInstanceEnumeration;
-import { VisualSettings } from "./settings";
-
+import IVisualHost = powerbi.extensibility.IVisualHost;
 import * as d3 from "d3";
+import { VisualSettings } from "./settings";
+import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
 
-type Selection<T extends d3.BaseType> = d3.Selection<T, any,any, any>;
+type Selection<T extends d3.BaseType> = d3.Selection<T, any, any, any>;
 
 export class Visual implements IVisual {
     private host: IVisualHost;
@@ -48,9 +45,9 @@ export class Visual implements IVisual {
     private circle: Selection<SVGElement>;
     private textValue: Selection<SVGElement>;
     private textLabel: Selection<SVGElement>;
-
     private visualSettings: VisualSettings;
-
+    private formattingSettingsService: FormattingSettingsService;
+    
     constructor(options: VisualConstructorOptions) {
         this.svg = d3.select(options.element)
             .append('svg')
@@ -64,27 +61,24 @@ export class Visual implements IVisual {
         this.textLabel = this.container.append("text")
             .classed("textLabel", true);
     }
-
+    
     public update(options: VisualUpdateOptions) {
-        //this.settings = Visual.parseSettings(options && options.dataViews && options.dataViews[0]);
-
         let dataView: DataView = options.dataViews[0];
-
-        this.visualSettings = VisualSettings.parse<VisualSettings>(dataView);
-        this.visualSettings.circle.circleThickness = Math.max(0, this.visualSettings.circle.circleThickness);
-        this.visualSettings.circle.circleThickness = Math.min(10, this.visualSettings.circle.circleThickness);
-
-
         let width: number = options.viewport.width;
         let height: number = options.viewport.height;
         this.svg.attr("width", width);
         this.svg.attr("height", height);
+        this.formattingSettingsService = new FormattingSettingsService();
+
         let radius: number = Math.min(width, height) / 2.2;
+        this.visualSettings = this.formattingSettingsService.populateFormattingSettingsModel(VisualSettings, options.dataViews[0]);
+        this.visualSettings.circle.circleThickness.value = Math.max(0, this.visualSettings.circle.circleThickness.value);
+        this.visualSettings.circle.circleThickness.value = Math.min(10, this.visualSettings.circle.circleThickness.value);
         this.circle
-            .style("fill", this.visualSettings.circle.circleColor)
+            .style("fill", this.visualSettings.circle.circleColor.value.value)
             .style("fill-opacity", 0.5)
             .style("stroke", "black")
-            .style("stroke-width", this.visualSettings.circle.circleThickness)
+            .style("stroke-width", this.visualSettings.circle.circleThickness.value)
             .attr("r", radius)
             .attr("cx", width / 2)
             .attr("cy", height / 2);
@@ -98,25 +92,16 @@ export class Visual implements IVisual {
             .style("font-size", fontSizeValue + "px");
         let fontSizeLabel: number = fontSizeValue / 4;
         this.textLabel
-            .text(dataView.metadata.columns[0].displayName) 
+            .text(dataView.metadata.columns[0].displayName)
             .attr("x", "50%")
-            .attr("y", height / 2)  
+            .attr("y", height / 2)
             .attr("dy", fontSizeValue / 1.2)
             .attr("text-anchor", "middle")
             .style("font-size", fontSizeLabel + "px");
     }
-
-    private static parseSettings(dataView: DataView): VisualSettings {
-        return <VisualSettings>VisualSettings.parse(dataView);
+    public getFormattingModel(): powerbi.visuals.FormattingModel {
+        return this.formattingSettingsService.buildFormattingModel(this.visualSettings);
     }
 
-    /** 
-     * This function gets called for each of the objects defined in the capabilities files and allows you to select which of the 
-     * objects and properties you want to expose to the users in the property pane.
-     * 
-     */
-    public enumerateObjectInstances(options: EnumerateVisualObjectInstancesOptions): VisualObjectInstanceEnumeration {
-        const settings: VisualSettings = this.visualSettings || <VisualSettings>VisualSettings.getDefault();
-        return VisualSettings.enumerateObjectInstances(settings, options);
-    }
+    
 }
