@@ -8,10 +8,10 @@
       "description": "PowerBI",
       "supportUrl": "blank",
       "gitHubUrl": "blank"
-    },
+    }, 
     "apiVersion": "4.7.0",
     "author": {
-      "name": "Microsoft",
+      "name": "circlecard", 
       "email": "v-wenhaixia@microsoft.com"
     },
     "assets": {
